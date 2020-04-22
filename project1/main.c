@@ -1,25 +1,30 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sched.h>
+#include <unistd.h>
 #include <sys/wait.h>
+#include <sys/types.h>
 #include "process.h"
 #define RR_MAX 500
 
 int main()
 {
-    char s[20];
+	setcore(getpid(), 0);
+	char s[20];
     scanf("%s", s);
     int n;
     scanf("%d", &n);
     process *all=(process *)malloc(sizeof(process)*n);
-    for(int i=0;i<n;i++) scanf("%s %d %d", all[i].name, all[i].ready_time, all[i].exec_time);
+    for(int i=0;i<n;i++) scanf("%s %d %d", all[i].name, &all[i].ready_time, &all[i].exec_time);
+	for(int i=0;i<n;i++) all[i].pid=-1;
     int time=0;  //current time
     int now=-1;  //current running process
     int cnt=0;   //finished processes
-    int last_rr=-1;
+    int last_rr=0;
     while(1){
         if(now!=-1&&all[now].exec_time==0){
-            waitpid(all[now].pid);
+            waitpid(all[now].pid, NULL, 0);
             printf("%s %d\n", all[now].name, all[now].pid);
             cnt++;
             now=-1;
@@ -28,7 +33,7 @@ int main()
         for(int i=0;i<n;i++){
             if(all[i].ready_time==time){
                 all[i].pid=new_process(all[i]);
-                stop(all[i]);
+                stop(all[i].pid);
             }
         }
         int next=-1;
@@ -71,8 +76,8 @@ int main()
             exit(0);
         }
         if(next!=-1&&next!=now){
-            stop(all[now]);
-            activate(all[next]);
+            stop(all[now].pid);
+            activate(all[next].pid);
             all[now].ready_time=time;
             now=next;
         }
