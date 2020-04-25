@@ -10,7 +10,8 @@
 
 int main()
 {
-	setcore(getpid(), 0);
+	setcore(0, 0);
+	activate(0);
 	char s[20];
     scanf("%s", s);
     int n;
@@ -33,7 +34,7 @@ int main()
         for(int i=0;i<n;i++){
             if(all[i].ready_time==time){
                 all[i].pid=new_process(all[i]);
-                stop(all[i].pid);
+				stop(all[i].pid);
             }
         }
         int next=-1;
@@ -44,6 +45,7 @@ int main()
                     if(next==-1||all[i].ready_time<all[next].ready_time) next=i;
                 }
             }
+			else next=now;
         }
         else if(strcmp(s, "PSJF")==0){
             for(int i=0;i<n;i++){
@@ -53,6 +55,7 @@ int main()
         }
         else if(strcmp(s, "RR")==0){
             if(now==-1||time-last_rr==RR_MAX){
+				if(now!=-1) all[now].ready_time=time;
                 for(int i=0;i<n;i++){
                     if(all[i].pid==-1||all[i].exec_time==0) continue;
                     if(next==-1||all[i].ready_time<all[next].ready_time){
@@ -76,9 +79,8 @@ int main()
             exit(0);
         }
         if(next!=-1&&next!=now){
-            stop(all[now].pid);
             activate(all[next].pid);
-            all[now].ready_time=time;
+			if(now!=-1) stop(all[now].pid);
             now=next;
         }
         volatile unsigned long i; for(i=0;i<1000000UL;i++);

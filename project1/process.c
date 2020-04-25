@@ -7,21 +7,38 @@
 #include <sys/types.h>
 #include <sys/syscall.h>
 #include "process.h"
-#ifndef SCHED_IDLE
-#define SCHED_IDLE 5
+#ifndef SCHED_FIFO
+#define SCHED_FIFO 1
 #endif
 
 void setcore(pid_t pid, int corenum){
 	cpu_set_t mask;
 	CPU_ZERO(&mask);
-	CPU_SET(1, &mask);
+	CPU_SET(corenum, &mask);
 	sched_setaffinity(pid, sizeof(mask), &mask);
 	return;
 }
 
+void stop(pid_t pid){
+    struct sched_param param;
+    param.sched_priority = 1;
+    sched_setscheduler(pid, SCHED_FIFO, &param);  //for running very low priority background jobs
+    return;
+}
+
+void activate(pid_t pid){
+    struct sched_param param;
+    param.sched_priority = 99;
+    sched_setscheduler(pid, SCHED_FIFO, &param);  //higher priority than others
+    return;
+}
+
 pid_t new_process(process p){
     pid_t pid=fork();
-    if(pid<0){ perror("fork"); return -1;}
+    if(pid<0){
+		perror("fork");
+		return -1;
+	}
     if(pid==0){
 		pid_t id=getpid();
         long start_time=syscall(333);  //get start time
@@ -34,16 +51,4 @@ pid_t new_process(process p){
 		setcore(pid, 1);
 		return pid;
 	}
-}
-void stop(pid_t pid){
-    struct sched_param param;
-    param.sched_priority = 0;
-    sched_setscheduler(pid, SCHED_IDLE, &param);  //for running very low priority background jobs
-    return;
-}
-void activate(pid_t pid){
-    struct sched_param param;
-    param.sched_priority = 0;
-    sched_setscheduler(pid, SCHED_OTHER, &param);  //higher priority than others
-    return;
 }
