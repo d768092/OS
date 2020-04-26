@@ -2,7 +2,7 @@
 policy="FIFO PSJF RR SJF"
 for p in $policy
 do
-	for i in $(seq 1 4)
+	for i in $(seq 1 5)
 	do
 		echo "$p"_"$i"
 		sudo dmesg -c > /dev/null

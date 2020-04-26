@@ -31,6 +31,7 @@ int main()
 			long end_time=syscall(333);
 			syscall(334, all[now].pid, all[now].start_time, end_time);
             printf("%s %d\n", all[now].name, all[now].pid);
+			fflush(stdout);
             cnt++;
             now=-1;
             if(cnt==n) break;
