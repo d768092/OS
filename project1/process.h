@@ -7,6 +7,7 @@ typedef struct {
     char name[32];
     int ready_time;
     int exec_time;
+	long start_time;
     pid_t pid;
 }process;
 

@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -5,6 +6,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <sys/types.h>
+#include <sys/syscall.h>
 #include "process.h"
 #define RR_MAX 500
 
@@ -26,6 +28,8 @@ int main()
     while(1){
         if(now!=-1&&all[now].exec_time==0){
             waitpid(all[now].pid, NULL, 0);
+			long end_time=syscall(333);
+			syscall(334, all[now].pid, all[now].start_time, end_time);
             printf("%s %d\n", all[now].name, all[now].pid);
             cnt++;
             now=-1;
@@ -35,6 +39,7 @@ int main()
             if(all[i].ready_time==time){
                 all[i].pid=new_process(all[i]);
 				stop(all[i].pid);
+				all[i].start_time=syscall(333);
             }
         }
         int next=-1;

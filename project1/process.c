@@ -5,7 +5,6 @@
 #include <sched.h>
 #include <unistd.h>
 #include <sys/types.h>
-#include <sys/syscall.h>
 #include "process.h"
 #ifndef SCHED_FIFO
 #define SCHED_FIFO 1
@@ -40,11 +39,11 @@ pid_t new_process(process p){
 		return -1;
 	}
     if(pid==0){
-		pid_t id=getpid();
-        long start_time=syscall(333);  //get start time
+		//pid_t id=getpid();
+        //long start_time=syscall(333);  //get start time
         for(int t=0;t<p.exec_time;t++){ volatile unsigned long i; for(i=0;i<1000000UL;i++); }
-        long end_time=syscall(333);  //get end time
-        syscall(334, id, start_time, end_time);  //print to dmseg
+        //long end_time=syscall(333);  //get end time
+        //syscall(334, id, start_time, end_time);  //print to dmseg
         exit(0); 
     }
     if(pid>0){
