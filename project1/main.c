@@ -27,20 +27,18 @@ int main()
 	int last_rr=0;
 	while(1){
 		if(now!=-1&&all[now].exec_time==0){
-        		waitpid(all[now].pid, NULL, 0);
-			long end_time=syscall(333);
-			syscall(334, all[now].pid, all[now].start_time, end_time);
-        		printf("%s %d\n", all[now].name, all[now].pid);
+        	printf("%s %d\n", all[now].name, all[now].pid);
 			fflush(stdout);
+        	waitpid(all[now].pid, NULL, 0);
 			cnt++;
 			now=-1;
 			if(cnt==n) break;
 		}
 		for(int i=0;i<n;i++){
 			if(all[i].ready_time==time){
+				all[i].start_time=syscall(333);
 				all[i].pid=new_process(all[i]);
 				stop(all[i].pid);
-				all[i].start_time=syscall(333);
 			}
 		}
 		int next=-1;
