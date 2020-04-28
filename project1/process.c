@@ -19,30 +19,30 @@ void setcore(pid_t pid, int corenum){
 }
 
 void stop(pid_t pid){
-    struct sched_param param;
-    param.sched_priority = 1;
-    sched_setscheduler(pid, SCHED_FIFO, &param);  //for running very low priority background jobs
-    return;
+	struct sched_param param;
+	param.sched_priority = 1;
+	sched_setscheduler(pid, SCHED_FIFO, &param);  //for running very low priority background jobs
+	return;
 }
 
 void activate(pid_t pid){
-    struct sched_param param;
-    param.sched_priority = 99;
-    sched_setscheduler(pid, SCHED_FIFO, &param);  //higher priority than others
-    return;
+	struct sched_param param;
+	param.sched_priority = 99;
+	sched_setscheduler(pid, SCHED_FIFO, &param);  //higher priority than others
+	return;
 }
 
 pid_t new_process(process p){
-    pid_t pid=fork();
-    if(pid<0){
+	pid_t pid=fork();
+	if(pid<0){
 		perror("fork");
 		return -1;
 	}
-    if(pid==0){
-        for(int t=0;t<p.exec_time;t++){ volatile unsigned long i; for(i=0;i<1000000UL;i++); }
-        exit(0); 
-    }
-    if(pid>0){
+	if(pid==0){
+		for(int t=0;t<p.exec_time;t++){ volatile unsigned long i; for(i=0;i<1000000UL;i++); }
+		exit(0); 
+	}
+	if(pid>0){
 		setcore(pid, 1);
 		return pid;
 	}
